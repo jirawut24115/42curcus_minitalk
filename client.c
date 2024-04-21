@@ -3,11 +3,72 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jichompo <jichompo@>                       +#+  +:+       +#+        */
+/*   By: jichompo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/16 21:10:09 by jichompo          #+#    #+#             */
-/*   Updated: 2024/04/16 21:10:26 by jichompo         ###   ########.fr       */
+/*   Created: 2024/04/21 16:38:48 by jichompo          #+#    #+#             */
+/*   Updated: 2024/04/21 16:38:55 by jichompo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+int	g_status;
+
+void	ft_continue(int signum)
+{
+	g_status = 1;
+}
+
+// void	ft_wait(int signum)
+// {
+// 	g_status = 2;
+// }
+
+void	ft_send_char(char c, pid_t pid)
+{
+	int	index;
+
+	index = 7;
+	while (index >= 0)
+	{
+		if (c << index & 1)
+		{
+			if (kill(pid, SIGUSR1) == -1)
+				exit(EXIT_FAILURE);
+		}
+		else
+		{
+			if (kill(pid, SIGUSR2) == -1)
+				exit(EXIT_FAILURE);
+		}
+		index--;
+		while (g_status == 0)
+			;
+		// if (g_status == 2)
+		// 	ft_send_char(c, pid);
+	}
+}
+
+void	ft_send_msg(char *str, pid_t pid)
+{
+	while (*str)
+	{
+		ft_send_char(*str, pid);
+		usleep(400);
+		str++;
+	}
+	ft_send_char('\0', pid);
+}
+
+int	main(int argc, char **argv)
+{
+	pid_t	pid;
+
+	g_status = 0;
+	if (argc != 3)
+		return (write(2, "Error\n", 6));
+	pid = atoi(argv[1]);
+	signal(SIGUSR1, &ft_continue);
+	// signal(SIGUSR2, &ft_wait);
+	ft_send_msg(argv[2], pid);
+}
