@@ -1,25 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   ft_isprint.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jichompo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jichompo <jichompo@>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/21 14:10:14 by jichompo          #+#    #+#             */
-/*   Updated: 2024/04/21 14:10:32 by jichompo         ###   ########.fr       */
+/*   Created: 2024/02/03 22:08:59 by jichompo          #+#    #+#             */
+/*   Updated: 2024/02/08 16:47:20 by jichompo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
-# include <signal.h>
-# include <unistd.h>
-# include <stdlib.h> //revise if needed or not
+#include "libft.h"
 
-typedef struct byte_info
+int	ft_isprint(int c)
 {
-	unsigned char	c;
-	int				i;
-} byte_t;
-
-#endif
+	if (c >= 32 && c < 127)
+		return (1);
+	return (0);
+}

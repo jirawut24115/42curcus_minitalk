@@ -12,9 +12,7 @@
 
 #include "minitalk.h"
 
-#include <stdio.h> // need to remove
-
-void	ft_reset(byte_t	*char_receive, pid_t *client_pid)
+void	ft_reset(t_byte	*char_receive, pid_t *client_pid)
 {
 	write (1, &char_receive->c, 1);
 	if (char_receive->c == '\0')
@@ -25,35 +23,35 @@ void	ft_reset(byte_t	*char_receive, pid_t *client_pid)
 
 void	ft_handler(int signum, siginfo_t *info, void *context)
 {
-	static byte_t			char_receive;
+	static t_byte			char_receive;
 	static pid_t			client_pid;
 
 	(void)context;
+	if (client_pid != 0 && client_pid != info->si_pid)
+		ft_reset(&char_receive, &client_pid);
 	if (client_pid == 0)
 		client_pid = info->si_pid;
-	if (client_pid != 0 && client_pid != info->si_pid)
-	{
-		kill(SIGUSR2, info->si_pid);
-		return ;
-	}
 	char_receive.c = char_receive.c << 1;
 	if (signum == SIGUSR1)
 		char_receive.c = char_receive.c | 1;
 	char_receive.i++;
 	if (char_receive.i == 8)
 		ft_reset(&char_receive, &client_pid);
-	kill (SIGUSR1, info->si_pid);
+	kill (info->si_pid, SIGUSR1);
 }
 
 int	main(void)
 {
 	struct sigaction	sa;
-	
-	printf("Server's PID is: %d\n", getpid()); // need change to ft_printf
+
+	//printf("Server's PID is: %d\n", getpid()); // need change to ft_printf
+	ft_putstr_fd("Server's PID is: ", 1);
+	ft_putnbr_fd(getpid(), 1);
+	ft_putstr_fd("\n", 1);
 	sa.sa_sigaction = &ft_handler;
 	sa.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &sa, (void *)0);
 	sigaction(SIGUSR2, &sa, (void *)0);
 	while (1)
-		;	
+		;
 }
